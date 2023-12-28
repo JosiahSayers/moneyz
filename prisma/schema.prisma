@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  admin
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  role      Role      @default(user)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  earnings  Earning[]
+  payouts   Payout[]
+}
+
+model Benefactor {
+  id        Int       @id @default(autoincrement())
+  name      String
+  earnings  Earning[]
+  payouts   Payout[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+}
+
+model Earning {
+  id            Int        @id @default(autoincrement())
+  description   String
+  amountInCents Int
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime
+  addedBy       User       @relation(fields: [addedById], references: [id])
+  addedById     Int
+  benefactor    Benefactor @relation(fields: [benefactorId], references: [id])
+  benefactorId  Int
+}
+
+model Payout {
+  id            Int        @id @default(autoincrement())
+  type          String
+  amountInCents Int
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime
+  benefactor    Benefactor @relation(fields: [benefactorId], references: [id])
+  benefactorId  Int
+  paidBy        User       @relation(fields: [paidById], references: [id])
+  paidById      Int
+}
