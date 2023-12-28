@@ -2,6 +2,8 @@ import { v4 as uuid } from 'uuid';
 import jwt from 'jsonwebtoken';
 import { db } from '~/utils/database.server';
 import { Role } from '@prisma/client';
+import { getSession } from '~/utils/auth/session.server';
+import { redirect } from '@remix-run/node';
 
 function params() {
   const clientId = process.env.AUTHELIA_CLIENT_ID;
@@ -27,6 +29,7 @@ export function authRedirectUrl() {
   url.searchParams.append('response_type', 'code');
   url.searchParams.append('scope', 'openid profile email groups');
   url.searchParams.append('state', uuid());
+  url.searchParams.append('nonce', uuid());
   return url.toString();
 }
 
@@ -42,9 +45,10 @@ export async function processAuthCallback(request: Request) {
   const role = isAdmin ? Role.admin : Role.user;
   const user = await db.user.upsert({
     where: {
-      email: id.email,
+      username: id.preferred_username,
     },
     create: {
+      username: id.preferred_username,
       email: id.email,
       name: id.name,
       role,
@@ -80,24 +84,50 @@ async function getAccessToken(authCode: string) {
   }
 
   const data = await res.json();
-
   return { accessToken: data.access_token, idToken: data.id_token };
 }
 
-async function getSigningKey(kid: string) {
-  const keys = await getSigningKeys();
-  return keys[kid];
+export async function requireUser(request: Request) {
+  try {
+    const session = await getSession(request.headers.get('cookie'));
+    const accessToken = session.get('accessToken');
+    if (!accessToken) {
+      throw new Error('Access token not present in session');
+    }
+    const introspection = await introspectAccessToken(accessToken);
+    if (!introspection.active) {
+      throw new Error('Access token no longer valid');
+    }
+    const user = await db.user.findUnique({ where: { username: introspection.username } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
+  } catch (e) {
+    console.log(e);
+    throw redirect(authRedirectUrl());
+  }
 }
 
-async function getSigningKeys() {
-  const { baseAuthUrl } = params();
-  const res = await fetch(`${baseAuthUrl}/jwks.json`);
+async function introspectAccessToken(token: string) {
+  const { baseAuthUrl, basicAuth } = params();
+  const body = new URLSearchParams();
+  body.append('token', token);
+  body.append('token_type_hint', 'access_token');
+
+  const res = await fetch(`${baseAuthUrl}/api/oidc/introspection`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': `Basic ${basicAuth}`
+    },
+    body,
+  });
+
   if (!res.ok) {
-    throw new Error('Failed to get signing keys');
+    return null;
   }
+
   const data = await res.json();
-  return data.keys.reduce((acc, key) => {
-    acc[key.kid] = key.n;
-    return acc;
-  }, {});
+  return data;
 }
