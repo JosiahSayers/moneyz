@@ -7,7 +7,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSession(request.headers.get('cookie'));
   session.set('accessToken', accessToken);
 
-  return redirect('/dashboard', {
+  return redirect('/', {
     headers: {
       'Set-Cookie': await commitSession(session),
     }

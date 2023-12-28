@@ -1,26 +1,19 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Welcome } from "~/components/Welcome/Welcome";
-import { ColorSchemeToggle } from "~/components/ColorSchemeToggle/ColorSchemeToggle";
-import { getSession } from "~/utils/auth/session.server";
+import { requireUser } from "~/utils/auth/authelia.server";
+import { json, useLoaderData } from "@remix-run/react";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Mantine Remix App" },
-    { name: "description", content: "Welcome to Mantine!" },
+    { title: "Money Pleeeeeease" },
   ];
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const session = await getSession(request.headers.get('cookie'));
-  console.log(session.data);
-  return null;
+  const user = await requireUser(request);
+  return json({ name: user.name });
 }
 
 export default function Index() {
-  return (
-    <div>
-      <Welcome />
-      <ColorSchemeToggle />
-    </div>
-  );
+  const user = useLoaderData<typeof loader>();
+  return <h1>{user.name}</h1>
 }
