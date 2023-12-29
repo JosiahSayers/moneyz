@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "recharts": "^2.10.3",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
@@ -39,8 +40,11 @@
     "prisma": "^5.7.1",
     "typescript": "^5.2.2"
   },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "packageManager": "yarn@4.0.1"
 }

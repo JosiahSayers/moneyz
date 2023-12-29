@@ -1,5 +1,4 @@
 import "@mantine/core/styles.css";
-
 import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LinksFunction } from "@remix-run/node";
 import {
@@ -14,6 +13,7 @@ import {
 import { MantineProvider, ColorSchemeScript } from "@mantine/core";
 import { NavigationProgress, nprogress } from '@mantine/nprogress';
 import { useEffect } from "react";
+import Shell from '~/components/app-shell';
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -42,11 +42,13 @@ export default function App() {
       </head>
       <body>
         <MantineProvider>
+          <Shell>
           <NavigationProgress />
           <Outlet />
           <ScrollRestoration />
           <Scripts />
           <LiveReload />
+          </Shell>
         </MantineProvider>
       </body>
     </html>

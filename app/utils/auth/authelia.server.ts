@@ -2,8 +2,6 @@ import { v4 as uuid } from 'uuid';
 import jwt from 'jsonwebtoken';
 import { db } from '~/utils/database.server';
 import { Role } from '@prisma/client';
-import { getSession } from '~/utils/auth/session.server';
-import { redirect } from '@remix-run/node';
 
 function params() {
   const clientId = process.env.AUTHELIA_CLIENT_ID;
@@ -87,29 +85,7 @@ async function getAccessToken(authCode: string) {
   return { accessToken: data.access_token, idToken: data.id_token };
 }
 
-export async function requireUser(request: Request) {
-  try {
-    const session = await getSession(request.headers.get('cookie'));
-    const accessToken = session.get('accessToken');
-    if (!accessToken) {
-      throw new Error('Access token not present in session');
-    }
-    const introspection = await introspectAccessToken(accessToken);
-    if (!introspection.active) {
-      throw new Error('Access token no longer valid');
-    }
-    const user = await db.user.findUnique({ where: { username: introspection.username } });
-    if (!user) {
-      throw new Error('User not found');
-    }
-    return user;
-  } catch (e) {
-    console.log(e);
-    throw redirect(authRedirectUrl());
-  }
-}
-
-async function introspectAccessToken(token: string) {
+export async function introspectAccessToken(token: string) {
   const { baseAuthUrl, basicAuth } = params();
   const body = new URLSearchParams();
   body.append('token', token);
