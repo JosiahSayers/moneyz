@@ -7,7 +7,7 @@
   "scripts": {
     "build": "remix build",
     "dev": "remix dev --manual",
-    "start": "remix-serve /app/build/index.js",
+    "start": "remix-serve build/index.js",
     "typecheck": "tsc",
     "publish": "docker buildx build --push --platform linux/arm64/v8,linux/amd64 -t josiahsayers15/money-please:$npm_package_version -t josiahsayers15/money-please:latest ."
   },

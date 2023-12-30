@@ -1,2 +1,2 @@
-yarn prisma migrate deploy
-yarn start
+npx prisma migrate deploy
+npm run start
