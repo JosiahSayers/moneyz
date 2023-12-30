@@ -35,11 +35,15 @@ export async function action({ request }: ActionFunctionArgs) {
   const form = await parseForm<Form>(request);
 
   try {
-    const benefactor = await db.benefactor.findFirst({
+    let benefactor = await db.benefactor.upsert({
       where: {
         name: form.benefactor
-      }
-    });
+      },
+      create: {
+        name: form.benefactor
+      },
+      update: {}
+    }); 
 
     if (form.formType === 'earning') {
       await db.earning.create({

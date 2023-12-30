@@ -9,7 +9,7 @@
     "dev": "remix dev --manual",
     "start": "remix-serve build/index.js",
     "typecheck": "tsc",
-    "publish": "docker buildx build --push --platform linux/arm64/v8,linux/amd64 -t josiahsayers15/money-please:$npm_package_version -t josiahsayers15/money-please:latest ."
+    "publish": "docker buildx build --push --platform linux/amd64 -t josiahsayers15/money-please:$npm_package_version -t josiahsayers15/money-please:latest ."
   },
   "dependencies": {
     "@formdata-helper/remix": "^1.1.0",
