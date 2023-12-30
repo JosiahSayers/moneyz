@@ -3,11 +3,13 @@
   "private": true,
   "sideEffects": false,
   "type": "module",
+  "version": "1.0.0",
   "scripts": {
     "build": "remix build",
     "dev": "remix dev --manual",
     "start": "remix-serve ./build/index.js",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "publish": "docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 -t josiahsayers15/money-please:$npm_package_version -t josiahsayers15/money-please:latest ."
   },
   "dependencies": {
     "@formdata-helper/remix": "^1.1.0",
