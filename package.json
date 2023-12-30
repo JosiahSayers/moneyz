@@ -7,7 +7,7 @@
   "scripts": {
     "build": "remix build",
     "dev": "remix dev --manual",
-    "start": "remix-serve ./build/index.js",
+    "start": "remix-serve /app/build/index.js",
     "typecheck": "tsc",
     "publish": "docker buildx build --push --platform linux/arm/v7,linux/arm64/v8,linux/amd64 -t josiahsayers15/money-please:$npm_package_version -t josiahsayers15/money-please:latest ."
   },
@@ -27,6 +27,7 @@
     "dayjs": "^1.11.10",
     "isbot": "^3.7.0",
     "jsonwebtoken": "^9.0.2",
+    "prisma": "^5.7.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "recharts": "^2.10.3",
@@ -43,7 +44,6 @@
     "postcss": "^8.4.31",
     "postcss-preset-mantine": "1.12.0",
     "postcss-simple-vars": "^7.0.1",
-    "prisma": "^5.7.1",
     "typescript": "^5.2.2"
   },
   "prisma": {

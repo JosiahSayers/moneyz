@@ -10,6 +10,7 @@ FROM node as app
 WORKDIR /app
 COPY package.json yarn.lock /app/
 COPY build app
+COPY script/start app
 RUN yarn install --production=true --frozen-lockfile
 
-CMD ["yarn", "start"]
+CMD ["/app/start"]
