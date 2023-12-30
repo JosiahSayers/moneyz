@@ -1,10 +1,11 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { requireUser } from "~/utils/auth/guards.server";
 import { json, useLoaderData } from "@remix-run/react";
-import { Accordion, Box, Card, Text, Title } from "@mantine/core";
+import { Box, Title } from "@mantine/core";
 import { db } from "~/utils/database.server";
-import { usDollar } from "~/utils/formatters";
+import { centToDollar } from "~/utils/formatters";
 import RecentTransactions from "~/components/recent-transactions/recent-transactions";
+import EarningsSummary from "~/components/earnings-summary/earnings-summary";
 
 export const meta: MetaFunction = () => {
   return [
@@ -13,7 +14,7 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const user = await requireUser(request);
+  await requireUser(request);
   const earningsByBenefactor = await db.earning.groupBy({
     by: 'benefactorId',
     _sum: {
@@ -46,29 +47,30 @@ export async function loader({ request }: LoaderFunctionArgs) {
     const earned = earnings?._sum.amountInCents ?? 0;
     const paid = payouts?._sum.amountInCents ?? 0;
     return {
-      earned: usDollar(earned / 100),
-      paid: usDollar(paid / 100),
-      awaitingPayout: usDollar((earned - paid) / 100),
+      earned: centToDollar(earned),
+      paid: centToDollar(paid),
+      awaitingPayout: centToDollar(earned - paid),
       name: benefactor.name,
       id: benefactor.id
     }
   });
-  return json({ name: user.name, benefactorTotals });
+  return json({ benefactorTotals });
 }
 
 export default function Index() {
-  const { name, benefactorTotals } = useLoaderData<typeof loader>();
+  const { benefactorTotals } = useLoaderData<typeof loader>();
   return (
     <>
       <Title mb="xl">Earnings Summary</Title>
       <Box mb="xl">
         {benefactorTotals.map(bf => (
-          <Card key={bf.id}>
-            <Text size="lg" fw="bold" mb="sm">{bf.name}</Text>
-            <Text>Earned: {bf.earned}</Text>
-            <Text>Paid: {bf.paid}</Text>
-            <Text mt="xs">Awaiting Payout: {bf.awaitingPayout}</Text>
-          </Card>
+          <EarningsSummary
+            key={bf.id}
+            earned={bf.earned}
+            paid={bf.paid}
+            awaitingPayout={bf.awaitingPayout}
+            name={bf.name}
+          />
         ))}
       </Box>
 

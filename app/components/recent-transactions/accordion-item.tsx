@@ -1,7 +1,8 @@
-import { Accordion, Table } from "@mantine/core";
+import { Accordion, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { useFetcher } from "@remix-run/react";
-import RecentTransactionsTable from "~/components/recent-transactions/table";
+import MoneyBadge from "~/components/money-badge";
 import { loader } from "~/routes/api.recent-transactions";
+import { centToDollar } from "~/utils/formatters";
 
 interface Props {
   dataType: string;
@@ -23,7 +24,22 @@ export default function AccordionItem({ dataType, title }: Props) {
       <Accordion.Panel>
         {fetcher.data?.transactions ?
         (
-          <RecentTransactionsTable data={fetcher.data.transactions} subject="Benefactor"  />
+          // <RecentTransactionsTable data={fetcher.data.transactions} subject="Benefactor"  />
+          <Stack>
+            {fetcher.data.transactions.map(transaction => (
+              <Card key={transaction.id}>
+                <Group justify="space-between">
+                  <Text fw={500}>{transaction.benefactor.name}</Text>
+                  <MoneyBadge isPayout={dataType === 'payouts'}>{centToDollar(transaction.amountInCents)}</MoneyBadge>
+                </Group>
+                <Text size="xs" mb="md">{new Date(transaction.createdAt).toLocaleDateString()}</Text>
+
+                <Text size="sm" c="dimmed">
+                  {transaction.description}
+                </Text>
+              </Card>
+            ))}
+          </Stack>
         ) : (
           "Loading..."
         )}
