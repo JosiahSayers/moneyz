@@ -22,11 +22,15 @@ export async function loader({ request }: LoaderFunctionArgs) {
     benefactor: {
       id: number;
       name: string;
-    }
+    };
+    user: {
+      id: number;
+      name: string;
+    };
   }> = [];
 
   if (dataType === 'earnings') {
-    rawData = await db.earning.findMany({
+    rawData = (await db.earning.findMany({
       orderBy: {
         createdAt: 'desc'
       },
@@ -41,9 +45,21 @@ export async function loader({ request }: LoaderFunctionArgs) {
             name: true,
             id: true,
           }
+        },
+        addedBy: {
+          select: {
+            name: true,
+            id: true
+          }
         }
       }
-    });
+    })).map(row => ({
+      ...row,
+      user: {
+        name: row.addedBy.name,
+        id: row.addedBy.id
+      }
+    }));
   } else if (dataType === 'payouts') {
     rawData = (await db.payout.findMany({
       orderBy: {
@@ -60,11 +76,21 @@ export async function loader({ request }: LoaderFunctionArgs) {
             name: true,
             id: true,
           }
+        },
+        paidBy: {
+          select: {
+            name: true,
+            id: true
+          }
         }
       }
     })).map(row => ({
       ...row,
       description: row.type,
+      user: {
+        name: row.paidBy.name,
+        id: row.paidBy.id
+      }
     }));
   }
 

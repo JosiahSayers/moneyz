@@ -32,7 +32,7 @@ export default function AccordionItem({ dataType, title }: Props) {
                   <Text fw={500}>{transaction.benefactor.name}</Text>
                   <MoneyBadge isPayout={dataType === 'payouts'}>{centToDollar(transaction.amountInCents)}</MoneyBadge>
                 </Group>
-                <Text size="xs" mb="md">{new Date(transaction.createdAt).toLocaleDateString()}</Text>
+                <Text size="xs" mb="md">Added by {transaction.user.name} on {new Date(transaction.createdAt).toLocaleDateString()}</Text>
 
                 <Text size="sm" c="dimmed">
                   {transaction.description}

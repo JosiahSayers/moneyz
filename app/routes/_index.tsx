@@ -1,6 +1,6 @@
-import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
+import { json, type LoaderFunctionArgs, type MetaFunction } from "@remix-run/node";
 import { requireUser } from "~/utils/auth/guards.server";
-import { json, useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import { Box, Title } from "@mantine/core";
 import { db } from "~/utils/database.server";
 import { centToDollar } from "~/utils/formatters";
