@@ -1,13 +1,22 @@
+import { parseForm } from "@formdata-helper/remix";
 import { Autocomplete, Button, Group, NumberInput, Radio, Stack, TextInput } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect } from "@remix-run/node";
+import { Form, useLoaderData, useNavigation } from "@remix-run/react";
 import { json } from "@remix-run/server-runtime";
 import { IconCurrencyDollar } from "@tabler/icons-react";
 import { useState } from "react";
 import { getFormCopy } from "~/components/new/form-copy";
 import { requireUser } from "~/utils/auth/guards.server";
 import { db } from "~/utils/database.server";
+
+interface Form {
+  formType: string;
+  benefactor: string;
+  amount: string;
+  description: string;
+  date: string;
+}
 
 export async function loader({ request }: LoaderFunctionArgs) {
   await requireUser(request);
@@ -23,16 +32,51 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export async function action({ request }: ActionFunctionArgs) {
   const user = await requireUser(request);
-  const formData = await request.formData();
-  console.log(formData.get('date'));
-  return null;
+  const form = await parseForm<Form>(request);
+
+  try {
+    const benefactor = await db.benefactor.findFirst({
+      where: {
+        name: form.benefactor
+      }
+    });
+
+    if (form.formType === 'earning') {
+      await db.earning.create({
+        data: {
+          benefactorId: benefactor!.id,
+          createdAt: new Date(form.date),
+          addedById: user.id,
+          description: form.description,
+          amountInCents: parseFloat(form.amount) * 100,
+        }
+      });
+    } else if (form.formType === 'payout') {
+      await db.payout.create({
+        data: {
+          benefactorId: benefactor!.id,
+          createdAt: new Date(form.date),
+          paidById: user.id,
+          type: form.description,
+          amountInCents: parseFloat(form.amount) * 100
+        }
+      });
+    }
+  } catch (e) {
+    console.error(e);
+    return json({ success: false });
+  }
+
+  return redirect('/');
 }
 
 export default function New() {
   const { names } = useLoaderData<typeof loader>();
+  const { state } = useNavigation();
   const [formType, setFormType] = useState<string>('earning');
   const [date, setDate] = useState<Date | null>(new Date());
   const formCopy = getFormCopy(formType);
+  const submitting = state === 'submitting';
 
   return (
     <Form method="post">
@@ -83,7 +127,14 @@ export default function New() {
           onChange={setDate}
         />
 
-        <Button variant="filled" type="submit">Save</Button>
+        <Button
+          variant="filled"
+          type="submit"
+          disabled={submitting}
+          loading={submitting}
+        >
+          Save
+        </Button>
       </Stack>
     </Form>
   )

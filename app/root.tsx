@@ -44,11 +44,11 @@ export default function App() {
       <body>
         <MantineProvider>
           <Shell>
-          <NavigationProgress />
-          <Outlet />
-          <ScrollRestoration />
-          <Scripts />
-          <LiveReload />
+            <NavigationProgress />
+            <Outlet />
+            <ScrollRestoration />
+            <Scripts />
+            <LiveReload />
           </Shell>
         </MantineProvider>
       </body>

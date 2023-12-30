@@ -894,6 +894,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@formdata-helper/base@npm:^1.0.0":
+  version: 1.1.0
+  resolution: "@formdata-helper/base@npm:1.1.0"
+  checksum: 2a353bbb15accd389bc4ed22c830a7e2163da0b181bcb29f7d0d9a4845f179967c783794f313c3b8c77733d8192ece22ad71e99775929eae3d9e9f2262d76892
+  languageName: node
+  linkType: hard
+
+"@formdata-helper/remix@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@formdata-helper/remix@npm:1.1.0"
+  dependencies:
+    "@formdata-helper/base": "npm:^1.0.0"
+  checksum: 833ae447a5683fc420de89d38eb1989099b3baacf7fad85f7f98066f2c54b73c42a0245b8f70320365b54b7c7ab4b1cdfb8145561c6c1dd5f56ab2fac7cdd8e8
+  languageName: node
+  linkType: hard
+
 "@humanwhocodes/config-array@npm:^0.11.13":
   version: 0.11.13
   resolution: "@humanwhocodes/config-array@npm:0.11.13"
@@ -7644,6 +7660,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "remix-v2@workspace:."
   dependencies:
+    "@formdata-helper/remix": "npm:^1.1.0"
     "@mantine/core": "npm:7.3.2"
     "@mantine/dates": "npm:^7.3.2"
     "@mantine/hooks": "npm:7.3.2"
