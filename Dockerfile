@@ -2,20 +2,20 @@ FROM node as build
 
 WORKDIR /app
 COPY . .
-RUN npm i -g corepack
-RUN yarn install --frozen-lockfile
-RUN yarn build
+RUN npm ci
+RUN npm run build
 
 FROM node as app
 WORKDIR /app
 RUN npm i -g corepack
 COPY --from=build /app/package.json .
-COPY --from=build /app/yarn.lock .
-COPY --from=build /app/build .
-COPY --from=build /app/node_modules .
+COPY --from=build /app/package-lock.json .
+RUN NODE_ENV=production npm ci
+COPY --from=build /app/node_modules node_modules
+COPY --from=build /app/build build
 COPY script/start /app/start
 COPY prisma /app/prisma
 COPY public /app/public
-RUN NODE_ENV=production yarn install --frozen-lockfile
+RUN npx prisma generate
 
 CMD ["/app/start"]
