@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@mantine/core": "7.3.2",
+    "@mantine/dates": "^7.3.2",
     "@mantine/hooks": "7.3.2",
     "@mantine/nprogress": "^7.3.2",
     "@prisma/client": "5.7.1",
@@ -18,7 +19,9 @@
     "@remix-run/node": "^2.2.0",
     "@remix-run/react": "^2.2.0",
     "@remix-run/serve": "^2.2.0",
+    "@tabler/icons-react": "^2.44.0",
     "corepack": "^0.23.0",
+    "dayjs": "^1.11.10",
     "isbot": "^3.7.0",
     "jsonwebtoken": "^9.0.2",
     "react": "^18.2.0",

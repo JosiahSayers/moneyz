@@ -9,6 +9,7 @@ const supportedDataTypes = [
 export async function loader({ request }: LoaderFunctionArgs) {
   const params = new URL(request.url).searchParams;
   const dataType = params.get('dataType');
+  const take = parseInt(params.get('limit') ?? '5');
   if (!dataType || !supportedDataTypes.includes(dataType)) {
     return json({ transactions: [] });
   }
@@ -29,6 +30,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       orderBy: {
         createdAt: 'desc'
       },
+      take,
       select: {
         id: true,
         description: true,
@@ -47,6 +49,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       orderBy: {
         createdAt: 'desc'
       },
+      take,
       select: {
         id: true,
         amountInCents: true,

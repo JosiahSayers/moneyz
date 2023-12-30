@@ -1,4 +1,4 @@
-import { AppShell, Burger, Anchor } from '@mantine/core';
+import { AppShell, Burger, Anchor, Text, Group } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { Link } from '@remix-run/react';
 import { PropsWithChildren } from 'react';
@@ -8,7 +8,7 @@ export default function Shell({ children }: PropsWithChildren) {
 
   return (
     <AppShell
-      header={{ height: 60 }}
+      header={{ height: 40 }}
       navbar={{
         width: 300,
         breakpoint: 'sm',
@@ -17,12 +17,16 @@ export default function Shell({ children }: PropsWithChildren) {
       padding="md"
     >
       <AppShell.Header>
-        <Burger
-          opened={opened}
-          onClick={toggle}
-          hiddenFrom="sm"
-          size="sm"
-        />
+        <Group h="100%" px="md">
+          <Burger
+            opened={opened}
+            onClick={toggle}
+            hiddenFrom="sm"
+            size="sm"
+            px={0}
+          />
+          <Text fw="bold">Money Pleeeeeease</Text>
+        </Group>
       </AppShell.Header>
 
       <AppShell.Navbar p="md">

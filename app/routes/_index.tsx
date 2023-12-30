@@ -59,10 +59,11 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Index() {
   const { benefactorTotals } = useLoaderData<typeof loader>();
+
   return (
     <>
-      <Title mb="xl">Earnings Summary</Title>
-      <Box mb="xl">
+      <Title>Earnings Summary</Title>
+      <Box my="xl">
         {benefactorTotals.map(bf => (
           <EarningsSummary
             key={bf.id}
