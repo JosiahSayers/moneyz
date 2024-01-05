@@ -1,5 +1,6 @@
 import { Accordion, Badge, Card, Group, Stack, Text } from "@mantine/core";
 import { useFetcher } from "@remix-run/react";
+import { useEffect } from "react";
 import MoneyBadge from "~/components/money-badge";
 import { loader } from "~/routes/api.recent-transactions";
 import { centToDollar } from "~/utils/formatters";
@@ -7,16 +8,25 @@ import { centToDollar } from "~/utils/formatters";
 interface Props {
   dataType: string;
   title: string;
+  open: boolean;
 }
 
-export default function AccordionItem({ dataType, title }: Props) {
+export default function AccordionItem({ dataType, title, open }: Props) {
   const fetcher = useFetcher<typeof loader>();
-  
+
   const getData = () => {
     if (fetcher.state === 'idle' && !fetcher.data) {
       fetcher.load(`/api/recent-transactions?dataType=${dataType}`);
     }
   };
+
+  useEffect(() => {
+    if (!open) {
+      fetcher.load('/api/reset-fetcher');
+    } else {
+      getData();
+    }
+  }, [open])
 
   return (
     <Accordion.Item value={dataType} onMouseOver={getData}>
