@@ -1,8 +1,9 @@
-FROM node as build
+FROM node:20-alpine
 
 WORKDIR /app
-COPY . .
+COPY package.json package-lock.json ./
 RUN npm ci
+COPY . .
 RUN npm run build
 RUN npx prisma generate
 CMD ["/app/script/start"]
