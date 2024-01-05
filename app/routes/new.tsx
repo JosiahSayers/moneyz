@@ -2,13 +2,16 @@ import { parseForm } from "@formdata-helper/remix";
 import { Autocomplete, Button, Group, NumberInput, Radio, Stack, TextInput } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { ActionFunctionArgs, LoaderFunctionArgs, redirect } from "@remix-run/node";
-import { Form, useLoaderData, useNavigation } from "@remix-run/react";
+import { Form, useFetcher, useLoaderData, useNavigation } from "@remix-run/react";
 import { json } from "@remix-run/server-runtime";
 import { IconCurrencyDollar } from "@tabler/icons-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getFormCopy } from "~/components/new/form-copy";
 import { requireUser } from "~/utils/auth/guards.server";
 import { db } from "~/utils/database.server";
+import type { loader as AutocompleteLoader } from '~/routes/api.autocomplete';
+import { useDebounceCallback, useDebouncedState, useDebouncedValue } from "@mantine/hooks";
+import AsyncAutocomplete from "~/components/new/async-autocomplete";
 
 interface Form {
   formType: string;
@@ -51,7 +54,7 @@ export async function action({ request }: ActionFunctionArgs) {
           benefactorId: benefactor!.id,
           createdAt: new Date(form.date),
           addedById: user.id,
-          description: form.description,
+          description: form.description,    
           amountInCents: parseFloat(form.amount) * 100,
         }
       });
@@ -117,10 +120,11 @@ export default function New() {
           name={formCopy.amount.name}
           />
 
-        <TextInput
+        <AsyncAutocomplete
           label={formCopy.description.label}
           description={formCopy.description.description}
           name={formCopy.description.name}
+          formType={formType}
         />
 
         <DateInput

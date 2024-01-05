@@ -42,7 +42,8 @@ export default function App() {
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider>
+        <ColorSchemeScript defaultColorScheme="auto" />
+        <MantineProvider defaultColorScheme="auto">
           <Shell>
             <NavigationProgress />
             <Outlet />
