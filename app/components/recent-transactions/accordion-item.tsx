@@ -22,7 +22,7 @@ export default function AccordionItem({ dataType, title, open }: Props) {
 
   useEffect(() => {
     if (!open) {
-      fetcher.load('/api/reset-fetcher');
+      fetcher.data = undefined;
     } else {
       getData();
     }
@@ -34,7 +34,6 @@ export default function AccordionItem({ dataType, title, open }: Props) {
       <Accordion.Panel>
         {fetcher.data?.transactions ?
         (
-          // <RecentTransactionsTable data={fetcher.data.transactions} subject="Benefactor"  />
           <Stack>
             {fetcher.data.transactions.map(transaction => (
               <Card key={transaction.id}>
