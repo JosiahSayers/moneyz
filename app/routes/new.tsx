@@ -12,6 +12,7 @@ import { db } from "~/utils/database.server";
 import type { loader as AutocompleteLoader } from '~/routes/api.autocomplete';
 import { useDebounceCallback, useDebouncedState, useDebouncedValue } from "@mantine/hooks";
 import AsyncAutocomplete from "~/components/new/async-autocomplete";
+import { sendNotification } from "~/utils/notification.server";
 
 interface Form {
   formType: string;
@@ -58,6 +59,11 @@ export async function action({ request }: ActionFunctionArgs) {
           amountInCents: parseFloat(form.amount) * 100,
         }
       });
+      sendNotification(
+        user.id,
+        `${benefactor.name} earned $${form.amount}`,
+        `${user.name} gave ${benefactor.name} $${form.amount} for ${form.description}`
+      );
     } else if (form.formType === 'payout') {
       await db.payout.create({
         data: {
@@ -68,6 +74,11 @@ export async function action({ request }: ActionFunctionArgs) {
           amountInCents: parseFloat(form.amount) * 100
         }
       });
+      sendNotification(
+        user.id,
+        `${benefactor.name} was paid $${form.amount}`,
+        `${user.name} paid ${benefactor.name} $${form.amount} with ${form.description}`
+      );
     }
   } catch (e) {
     console.error(e);

@@ -9,13 +9,35 @@ const pushOptions: webpush.RequestOptions = {
   }
 }
 
-export async function sendNotification(userId: number, message: string) {
+export async function sendNotification(userId: number, title: string, message: string) {
+  try {
+    const usersToSendTo = await db.user.findMany();
+    // const usersToSendTo = await db.user.findMany({
+    //   where: {
+    //     id: {
+    //       not: userId,
+    //     }
+    //   }
+    // });
+
+    for (const user of usersToSendTo) {
+      await sendNotificationToUser(user.id, title, message);
+    }
+  } catch (e) {
+    console.error('Failed to send notification', e, { userId, title, message });
+  }
+}
+
+async function sendNotificationToUser(userId: number, title: string, message: string) {
   try {
     const subscriptions = await db.notificationSubscription.findMany({ where: { userId } });
+    const payload = JSON.stringify({ title, message });
+
     for (const subscription of subscriptions) {
       const notificationRecord = await db.notifications.create({
         data: {
-          sentToId: subscription.id
+          sentToId: subscription.id,
+          payload
         }
       });
 
@@ -27,7 +49,7 @@ export async function sendNotification(userId: number, message: string) {
             auth: subscription.authKey
           }
         },
-        message,
+        payload,
         pushOptions
       );
 

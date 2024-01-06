@@ -68,10 +68,13 @@ model NotificationSubscription {
   user          User            @relation(fields: [userId], references: [id])
   userId        Int
   Notifications Notifications[]
+
+  @@unique([userId, endpoint, p256dhKey, authKey])
 }
 
 model Notifications {
   id                 Int                      @id @default(autoincrement())
+  payload            String
   responseStatusCode Int?
   responseHeaders    String?
   responseBody       String?
