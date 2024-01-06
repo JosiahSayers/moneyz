@@ -20,6 +20,7 @@ import { Notifications } from "@mantine/notifications";
 
 export const links: LinksFunction = () => [
   ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
+  { rel: 'manifest', href: '/webmanifest.json' }
 ];
 
 export const meta: MetaFunction = () => [
