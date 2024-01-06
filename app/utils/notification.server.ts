@@ -11,14 +11,13 @@ const pushOptions: webpush.RequestOptions = {
 
 export async function sendNotification(userId: number, title: string, message: string) {
   try {
-    const usersToSendTo = await db.user.findMany();
-    // const usersToSendTo = await db.user.findMany({
-    //   where: {
-    //     id: {
-    //       not: userId,
-    //     }
-    //   }
-    // });
+    const usersToSendTo = await db.user.findMany({
+      where: {
+        id: {
+          not: userId,
+        }
+      }
+    });
 
     for (const user of usersToSendTo) {
       await sendNotificationToUser(user.id, title, message);
@@ -28,7 +27,7 @@ export async function sendNotification(userId: number, title: string, message: s
   }
 }
 
-async function sendNotificationToUser(userId: number, title: string, message: string) {
+export async function sendNotificationToUser(userId: number, title: string, message: string) {
   try {
     const subscriptions = await db.notificationSubscription.findMany({ where: { userId } });
     const payload = JSON.stringify({ title, message });
