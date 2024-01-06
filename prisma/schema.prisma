@@ -13,15 +13,16 @@ enum Role {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  name      String
-  email     String    @unique
-  username  String    @unique
-  role      Role      @default(user)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  earnings  Earning[]
-  payouts   Payout[]
+  id                       Int                        @id @default(autoincrement())
+  name                     String
+  email                    String                     @unique
+  username                 String                     @unique
+  role                     Role                       @default(user)
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @updatedAt
+  earnings                 Earning[]
+  payouts                  Payout[]
+  NotificationSubscription NotificationSubscription[]
 }
 
 model Benefactor {
@@ -55,4 +56,27 @@ model Payout {
   benefactorId  Int
   paidBy        User       @relation(fields: [paidById], references: [id])
   paidById      Int
+}
+
+model NotificationSubscription {
+  id            Int             @id @default(autoincrement())
+  endpoint      String
+  p256dhKey     String
+  authKey       String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  user          User            @relation(fields: [userId], references: [id])
+  userId        Int
+  Notifications Notifications[]
+}
+
+model Notifications {
+  id                 Int                      @id @default(autoincrement())
+  responseStatusCode Int?
+  responseHeaders    String?
+  responseBody       String?
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+  sentTo             NotificationSubscription @relation(fields: [sentToId], references: [id])
+  sentToId           Int
 }

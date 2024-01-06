@@ -32,6 +32,7 @@ export default function Shell({ children }: PropsWithChildren) {
       <AppShell.Navbar p="md">
         <Anchor component={Link} to="/" onClick={toggle}>Home</Anchor>
         <Anchor component={Link} to="/new" onClick={toggle}>Record Transaction</Anchor>
+        <Anchor component={Link} to="/notifications" onClick={toggle}>Notifications</Anchor>
       </AppShell.Navbar>
 
       <AppShell.Main>{children}</AppShell.Main>
