@@ -21,7 +21,7 @@ export function usePushPermissionState() {
   const [state, setState] = useState<PermissionState>();
 
   useEffect(() => {
-    sw?.pushManager.permissionState().then(setState);
+    sw?.pushManager?.permissionState().then(setState);
   }, [sw]);
 
   return state;
