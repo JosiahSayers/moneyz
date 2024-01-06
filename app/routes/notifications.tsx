@@ -27,6 +27,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
       payload: true,
       responseStatusCode: true,
       id: true,
+    },
+    orderBy: {
+      createdAt: 'desc'
     }
   });
 
