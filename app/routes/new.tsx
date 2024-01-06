@@ -1,16 +1,14 @@
 import { parseForm } from "@formdata-helper/remix";
-import { Autocomplete, Button, Group, NumberInput, Radio, Stack, TextInput } from "@mantine/core";
+import { Autocomplete, Button, Group, NumberInput, Radio, Stack } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { ActionFunctionArgs, LoaderFunctionArgs, redirect } from "@remix-run/node";
-import { Form, useFetcher, useLoaderData, useNavigation } from "@remix-run/react";
+import { Form, useLoaderData, useNavigation } from "@remix-run/react";
 import { json } from "@remix-run/server-runtime";
 import { IconCurrencyDollar } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getFormCopy } from "~/components/new/form-copy";
 import { requireUser } from "~/utils/auth/guards.server";
 import { db } from "~/utils/database.server";
-import type { loader as AutocompleteLoader } from '~/routes/api.autocomplete';
-import { useDebounceCallback, useDebouncedState, useDebouncedValue } from "@mantine/hooks";
 import AsyncAutocomplete from "~/components/new/async-autocomplete";
 import { sendNotification } from "~/utils/notification.server";
 
@@ -62,7 +60,7 @@ export async function action({ request }: ActionFunctionArgs) {
       sendNotification(
         user.id,
         `${benefactor.name} earned $${form.amount}`,
-        `${user.name} gave ${benefactor.name} $${form.amount} for ${form.description}`
+        `${user.name} gave ${benefactor.name} $${form.amount} for "${form.description}"`
       );
     } else if (form.formType === 'payout') {
       await db.payout.create({

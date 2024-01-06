@@ -1,5 +1,5 @@
 import { parseForm } from "@formdata-helper/remix";
-import { Alert, Button, Group, Stack, Text, Title } from "@mantine/core";
+import { Alert, Button, Card, Group, Notification, Stack, Text, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
@@ -16,9 +16,24 @@ interface RecordSubscription {
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  await requireUser(request);
+  const user = await requireUser(request);
+  const recentNotifications = await db.notifications.findMany({
+    where: {
+      sentTo: {
+        userId: user.id
+      }
+    },
+    take: 5,
+    select: {
+      payload: true,
+      responseStatusCode: true,
+      id: true,
+    }
+  });
+
   return json({
-    vapidPublicKey: process.env.VAPID_PUBLIC_KEY!
+    vapidPublicKey: process.env.VAPID_PUBLIC_KEY!,
+    recentNotifications,
   });
 }
 
@@ -43,7 +58,7 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export default function Notifications() {
-  const { vapidPublicKey } = useLoaderData<typeof loader>();
+  const { vapidPublicKey, recentNotifications } = useLoaderData<typeof loader>();
   const sw = useServiceWorkerRegistration();
   const pushPermissionState = usePushPermissionState();
   const fetcher = useFetcher<typeof action>();
@@ -100,6 +115,20 @@ export default function Notifications() {
           <Text>Push Notifications</Text>
           <Button onClick={registerPush}>Enable Push Notifications</Button>
         </Group>
+
+        <Text size="xl" fw="bold" mt="3rem" mb={0} pb={0}>Recent Notifications</Text>
+        <Text size="xs">* Green: Delivered Successfully</Text>
+        {recentNotifications.map(notification => {
+          const payload = JSON.parse(notification.payload);
+          return <Notification
+            key={notification.id}
+            color={notification.responseStatusCode === 201 ? 'green' : 'red'}
+            title={payload.title}
+            withCloseButton={false}
+          >
+            {payload.message}
+          </Notification>
+        })}
       </Stack>
     </>
   )
